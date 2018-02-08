@@ -9,6 +9,8 @@ const EmberApp = require('ember-cli/lib/broccoli/ember-app'); // eslint-disable-
 const Plugin = require('broccoli-plugin');
 const walkSync = require('walk-sync');
 
+const PluginRegistry = require('./lib/models/plugin-registry');
+
 module.exports = {
   name: 'ember-cli-addon-docs',
 
@@ -133,14 +135,15 @@ module.exports = {
     let defaultTree = this._super.treeForPublic.apply(this, arguments);
     if (!parentAddon) { return defaultTree; }
 
-    let DocsGenerator = require('./lib/broccoli/docs-generator');
+    let { project } = this;
+
+    let pluginRegistry = new PluginRegistry({ project, parentAddon });
+
+    // let DocsGenerator = require('./lib/broccoli/docs-generator');
     let SearchIndexer = require('./lib/broccoli/search-indexer');
 
-    let addonSources = path.resolve(parentAddon.root, parentAddon.treePaths.addon);
-    let docsTree = new DocsGenerator([addonSources], {
-      project: this.project,
-      destDir: 'docs'
-    });
+
+    let docsTree = new MergeTrees(pluginRegistry.docsGenerators);
 
     let templateContentsTree = this.contentExtractor.getTemplateContentsTree();
     let searchIndexTree = new SearchIndexer(new MergeTrees([docsTree, templateContentsTree]), {
