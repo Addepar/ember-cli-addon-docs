@@ -23,6 +23,10 @@ Router.map(function() {
       this.route('docs-demo');
     });
 
+    this.route('css', function() {
+      this.route('alert');
+    });
+
     this.route('api', function() {
       this.route('class', { path: '/:class_id' });
     });
