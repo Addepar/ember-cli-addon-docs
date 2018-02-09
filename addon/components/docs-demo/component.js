@@ -1,22 +1,22 @@
-import { computed } from '@ember/object';
-import { match } from '@ember/object/computed';
-import { A } from '@ember/array';
 import Component from '@ember/component';
+import { A } from '@ember/array';
+
+import { action, computed } from 'ember-decorators/object';
+import { match } from 'ember-decorators/object/computed';
+import { classNames } from 'ember-decorators/component';
+
 import layout from './template';
 
-export default Component.extend({
-  layout,
+@classNames('docs-demo')
+export default class DocsDemoComponent extends Component {
+  layout = layout;
 
-  classNames: 'docs-demo',
+  snippetRegistrations = A();
 
-  init() {
-    this._super(...arguments);
+  @match('name', /.js$/) isJavascript;
 
-    this.set('snippetRegistrations', A());
-  },
-
-  isJavascript: match('name', /.js$/),
-  snippets: computed('activeSnippet', 'snippetRegistrations.[]', function() {
+  @computed('activeSnippet', 'snippetRegistrations.[]')
+  get snippets() {
     let activeSnippet = this.get('activeSnippet');
 
     return this.get('snippetRegistrations')
@@ -28,8 +28,8 @@ export default Component.extend({
           label: label || defaults.label,
           language: language || defaults.language
         };
-      })
-  }),
+      });
+  }
 
   defaultsFromName(name) {
     let label, language;
@@ -57,19 +57,19 @@ export default Component.extend({
     }
 
     return { label, language };
-  },
+  }
 
-  actions: {
-    registerSnippet(snippet) {
-      this.get('snippetRegistrations').pushObject(snippet);
+  @action
+  registerSnippet(snippet) {
+    this.get('snippetRegistrations').pushObject(snippet);
 
-      if (this.get('snippetRegistrations.length') === 1) {
-        this.set('activeSnippet', snippet.name);
-      }
-    },
-
-    selectSnippet(snippet) {
+    if (this.get('snippetRegistrations.length') === 1) {
       this.set('activeSnippet', snippet.name);
     }
   }
-});
+
+  @action
+  selectSnippet(snippet) {
+    this.set('activeSnippet', snippet.name);
+  }
+}

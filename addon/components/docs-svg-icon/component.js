@@ -1,16 +1,25 @@
 import Component from '@ember/component';
 import layout from './template';
 
-export default Component.extend({
-  layout,
+import { tagName } from 'ember-decorators/component';
+import { argument } from '@ember-decorators/argument';
+import { required } from '@ember-decorators/argument/validation';
+import { type } from '@ember-decorators/argument/type';
 
-  tagName: '',
-  height: 16,
-  width: 16,
+@tagName('')
+export default class DocsSvgIconComponent extends Component {
+  layout = layout;
+  static positionalParams = ['icon'];
 
+  @argument
+  @required
+  icon;
 
-}).reopenClass({
+  @argument({ defaultIfUndefined: true })
+  @type('number')
+  height = 16;
 
-  positionalParams: [ 'icon' ]
-
-});
+  @argument({ defaultIfUndefined: true })
+  @type('number')
+  width = 16;
+}
